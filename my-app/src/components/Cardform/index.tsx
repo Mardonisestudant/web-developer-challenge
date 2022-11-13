@@ -2,25 +2,21 @@ import Image from 'next/image';
 import { ChangeEvent, useContext, useEffect, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Row, Col, Form, Button, Container } from 'react-bootstrap';
+import { Row, Col, Form, Button } from 'react-bootstrap';
 import { BiTrashAlt } from 'react-icons/bi'
 import styles from './styles.module.scss';
 import photo from '../../../public/photo-upload@3x.png';
 import icondeletePost from '../../../public/image.png';
-
-
 import { AuthContext } from '../../Context/AuthContext';
-import PostsFeed from '../Post/indext';
+const PHOTO = photo.src.toString()
+
 
 export default function Cardform() {
-    const { handlesave } = useContext(AuthContext)
-
-    const PHOTO = photo.src.toString()
-    const [iconupload, seticonUpload] = useState<boolean>(false)
-    const [icontrash, setIcontrash] = useState<string>("hidden")
-    const [secondary, setSecondary] = useState<string>("secondary");
-    const [disabled, setDisable] = useState(true);
-    const [btcolor, setBtcolor] = useState("#313131")
+    const {
+        handlesave,
+        datadefault,
+        setDatadefault,
+    } = useContext(AuthContext)
 
     const [avatarUrl, setavatarUrl] = useState<string>(PHOTO)
     const [nome, setNome] = useState<string>("");
@@ -28,20 +24,29 @@ export default function Cardform() {
 
 
     useEffect(() => {
-        if (nome !== "" && menssage !== "" && avatarUrl !== PHOTO) {
-            setSecondary("success")
-            setDisable(false)
-            setBtcolor("#fff")
+        if (nome !== "" && menssage !== "" && PHOTO !== avatarUrl ) {
+            setDatadefault({...datadefault ,
+                btcolor: "#fff",
+                disabled: false,
+                iconupload: true,
+                secondary: "success"
+            })
         }
 
-        if (nome === "" || menssage === "" || avatarUrl === PHOTO) {
-            setSecondary("secondary")
-            setDisable(true)
-            setBtcolor("#fff")
+        if (nome === "" || menssage === "") {
+            setDatadefault({...datadefault,
+                secondary:"secondary",
+                disabled:true,
+                btcolor:"#313131"
+            })
         }
+
+        console.log(datadefault);
+        
     }, [nome, menssage, avatarUrl])
 
     function handleFile(e: ChangeEvent<HTMLInputElement>) {
+        e.preventDefault();
         if (!e.target.files) {
             return;
         }
@@ -52,8 +57,11 @@ export default function Cardform() {
         }
 
         if (image.type === 'image/jpeg' || image.type === 'image/png') {
-            seticonUpload(true)
-            setIcontrash("visible")
+            setDatadefault({
+                iconupload: true,
+                icontrash: "visible",
+                secondary: "secondary"
+            })
             let imageurl = URL.createObjectURL(e.target.files[0])
             setavatarUrl(imageurl)
         } else {
@@ -72,25 +80,35 @@ export default function Cardform() {
         setNome("")
         setMenssage("")
         setavatarUrl(PHOTO)
-        seticonUpload(false)
-        setIcontrash("hidden")
+
+        setDatadefault({
+            iconupload: false,
+            icontrash: "hidden"
+        })
     }
 
     function reset() {
-        setSecondary("secondary")
-        setDisable(true)
+        setDatadefault({...datadefault, 
+            btcolor: "#313131",
+            disabled: true,
+            icontrash: "hidden",
+            iconupload: false,
+            secondary: "secondary"
+        }
+        )
         setNome("")
         setMenssage("")
-        setBtcolor("313131")
         setavatarUrl(PHOTO)
-        seticonUpload(false)
-        setIcontrash("hidden")
     }
 
     function removeImg() {
         setavatarUrl(PHOTO)
-        seticonUpload(false)
-        setIcontrash("hidden")
+        setDatadefault({
+            iconupload: false,
+            icontrash: "hidden",
+            secondary: "secondary"
+        })
+
     }
 
 
@@ -103,66 +121,67 @@ export default function Cardform() {
 
 
     return (
-            <Row>
-                <Col className={styles.containerUpload} xs={12} sm={12} md={12} lg={12}>
-                    <Form.Label>
-                        <Image
-                            src={icondeletePost}
-                            hidden={iconupload}
-                            className={styles.icon}
-                            alt="icon" />
+        <Row>
+            <Col className={styles.containerUpload} xs={12} sm={12} md={12} lg={12}>
+                <Form.Label>
+                    <Image
+                        src={icondeletePost}
+                        hidden={datadefault.iconupload}
+                        className={styles.icon}
+                        alt="icon" />
 
-                        <Form.Control type="file"
-                            onChange={handleFile} />
+                    <Form.Control type="file"
+                        onChange={handleFile} />
 
-                        <Image
-                            src={avatarUrl}
-                            alt="logo"
-                            height={88}
-                            width={88} />
+                    <Image
+                        src={avatarUrl}
+                        alt="logo"
+                        height={88}
+                        width={88} />
 
-                    </Form.Label>
-                    <BiTrashAlt
-                        color='#FF5858'
-                        size={25}
-                        onClick={removeImg}
-                        visibility={icontrash} 
-                        className={styles.iconTrash} />
-                </Col>
-                <Col className={styles.containerForm} xs={12} sm={12} md={12} lg={12}>
+                </Form.Label>
+                <BiTrashAlt
+                    color='#FF5858'
+                    size={25}
+                    onClick={removeImg}
+                    visibility={datadefault.icontrash}
+                    className={styles.iconTrash} />
+            </Col>
+            <Col className={styles.containerForm} xs={12} sm={12} md={12} lg={12}>
 
-                    <Form.Control
-                        type="text"
-                        value={nome}
-                        placeholder='Digite seu nome'
-                        onChange={(e) => setNome(e.target.value)} />
+                <Form.Control
+                    type="text"
+                    value={nome}
+                    placeholder='Digite seu nome'
+                    onChange={(e) => setNome(e.target.value)}
+                />
 
-                    <Form.Control
-                        as="textarea"
-                        placeholder="Menssagem"
-                        value={menssage}
-                        onChange={(e) => setMenssage(e.target.value)}
-                        style={{ maxHeight: 80 }} />
-                </Col>
-                
-                <Col className={styles.containerbutton} xs={12} sm={12} md={12} lg={12}>
-                    <a href='#' onClick={reset}>Descartar</a>
-                    <Button
-                        variant={secondary}
-                        disabled={disabled}
-                        style={{ color: btcolor }}
-                        onClick={save}
-                    >Publicar</Button>
-                </Col>
+                <Form.Control
+                    as="textarea"
+                    placeholder="Menssagem"
+                    value={menssage}
+                    onChange={(e) => setMenssage(e.target.value)}
+                    style={{ maxHeight: 80 }} />
+            </Col>
 
-                <Col className={styles.feed} xs={12} sm={12} md={12} lg={12}>
-                    <p>Feed</p>
-                </Col>
+            <Col className={styles.containerbutton} xs={12} sm={12} md={12} lg={12}>
+                <a href='#' onClick={reset}>Descartar</a>
+                <Button
+                    variant={datadefault.secondary}
+                    disabled={datadefault.disabled}
+                    style={{ color: datadefault.btcolor }}
+                    onClick={save}
+                >Publicar</Button>
+            </Col>
+
+            <Col className={styles.feed} xs={12} sm={12} md={12} lg={12}>
+                <p>Feed</p>
+            </Col>
 
             <ToastContainer />
-            </Row>
-       
-    
+        </Row>
+
+
 
     )
 }

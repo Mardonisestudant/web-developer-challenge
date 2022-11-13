@@ -7,7 +7,7 @@ import { Container } from 'react-bootstrap';
 
 export default function HeaderBar() {
     return (
-        <Container>
+        <Container fluid>
             <Row>
 
                 <Col className={styles.header} xs={12} sm={12} md={12} lg={12} >

@@ -1,14 +1,15 @@
-import { Col, Container, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import styles from './styles.module.scss'
-import Image from "next/image";
+
+import Image from "react-bootstrap/Image";
 import icondelete from '../../../public/delete@3x.png';
 import { AuthContext } from '../../Context/AuthContext';
 import { useContext } from "react";
+const ICONDELETE = icondelete.src.toString();
+
 
 export default function PostsFeed() {
-
     const { posts, removePost } = useContext(AuthContext)
-
     const remove = async (i: number) => {
         removePost(i)
     }
@@ -23,7 +24,7 @@ export default function PostsFeed() {
                         <Row>
                             <Col className={styles.close} xs={12} sm={12} md={12} lg={12}>
                                 <Image
-                                    src={icondelete}
+                                    src={ICONDELETE}
                                     alt="logo"
                                     height={20}
                                     width={20}

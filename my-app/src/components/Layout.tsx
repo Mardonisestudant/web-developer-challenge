@@ -7,7 +7,7 @@ export default function Layout({children}:any){
     return(
         <>
         <HeaderBar />
-        <Container className={styles.container}>
+        <Container fluid className={styles.container}>
             <main>{children}</main>
         </Container>
         </>

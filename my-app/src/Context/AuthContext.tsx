@@ -1,21 +1,34 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
-import { Posts } from "../interfaces/interface";
+import { createContext, useEffect, useState } from "react";
+import { Posts, 
+    AuthProviderProps,
+    Datadefault
+ } from "../interfaces/interface";
+
+
 
 type AuthContextData = {
-    posts:Posts[]
+    posts:Posts[],
+    datadefault:Datadefault,
     handlesave: (posts:Posts[]) => void
     removePost: (i:number) => void
+    setDatadefault: (data:Datadefault) => void
+     
 }
 
-type AuthProviderProps = {
-    children: ReactNode
-}
-
-export const AuthContext = createContext({} as AuthContextData);
+ export const AuthContext = createContext({} as AuthContextData);
 
 
 export  function AuthProvider({ children }: AuthProviderProps){
+    
+    
     const [posts , setPosts] = useState<Posts[]>([])
+    const [datadefault, setDatadefault] = useState<Datadefault>({
+        btcolor:"#313131",
+        disabled:true,
+        icontrash:"hidden",
+        iconupload:false,
+        secondary:"secondary"
+    })
 
     const handlesave = async (posts:any) => {
         setPosts(Prev => [...Prev, posts]) 
@@ -36,8 +49,10 @@ export  function AuthProvider({ children }: AuthProviderProps){
         <AuthContext.Provider 
         value={{
             posts,
+            datadefault,
             handlesave,
-            removePost
+            removePost,
+            setDatadefault,
             }}>
             {children}
         </AuthContext.Provider>
